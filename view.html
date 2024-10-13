@@ -6,9 +6,9 @@
     <title>Camera Dashboard</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #20232a;
-            color: #61dafb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
             margin: 0;
             padding: 0;
             display: flex;
@@ -17,56 +17,54 @@
             align-items: center;
             height: 100vh;
         }
+
         .dashboard-container {
-            width: 100%;
+            width: 95%;
             max-width: 1600px;
-            background-color: #282c34;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
+            background-color: #1b1b1b;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 40px 0;
         }
+
         h1 {
-            color: #61dafb;
-            margin-bottom: 20px;
+            color: #8ab4f8; /* Light blue to match the sleek black theme */
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 30px;
         }
+
         .video-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
             gap: 20px;
             margin-bottom: 20px;
         }
+
+        /* Dark blue border with sleek black background */
         .video-frame {
             width: 100%;
-            height: 300px; /* Uniform height for all video frames */
+            height: 320px;
             position: relative;
-            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius: 10px;
+            background-color: #282828;
+            overflow: hidden;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.6);
+            border: 5px solid #004080; /* Dark blue border */
         }
+
         .video-frame iframe, .video-frame img {
             width: 100%;
             height: 100%;
-            border-radius: 8px;
-            border: none;
-            object-fit: contain; /* Ensures the video maintains its original aspect ratio */
-        }
-        .data-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-        .data-box {
-            background-color: #3a3f47;
-            color: white;
-            flex: 1;
-            padding: 20px;
-            border-radius: 8px;
+            object-fit: contain;
+            border-radius: 10px;
         }
 
-        /* Pop-up expansion styles */
+        /* Pop-up container */
         .popup-container {
             position: fixed;
             top: 50%;
@@ -74,36 +72,44 @@
             transform: translate(-50%, -50%);
             width: 90vw;
             height: 90vh;
-            z-index: 1000;
-            background-color: black;
+            background-color: #000;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-            border-radius: 10px;
-            display: none; /* Hidden by default */
+            border-radius: 12px;
+            z-index: 1000;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+            display: none;
         }
 
-        .popup-container iframe, .popup-container img {
+        .popup-container canvas {
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain;  /* Ensure the content fits within the container without losing aspect ratio */
-            border-radius: 8px;
+            object-fit: contain;
+            border-radius: 12px;
         }
 
-        /* Exit Pop-up Button */
+        /* Center the content inside the pop-up */
+        .popup-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Close button for pop-up */
         .close-popup-btn {
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: red;
+            background-color: #e60000;
             color: white;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 10px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
     </style>
@@ -112,75 +118,112 @@
     <div class="dashboard-container">
         <h1>Camera Streams</h1>
         <div class="video-container">
-            <div id="cam0" class="video-frame" onclick="openPopup('cam0')">
-                <iframe src="http://d83adde63011.dynamic.utexas.edu:8889/cam0/" allowfullscreen></iframe>
+            <!-- Optical Camera 1 -->
+            <div id="optical0" class="video-frame" onclick="openPopupIframe('http://d83adde63011.dynamic.utexas.edu:8889/cam0')">
+                <iframe src="http://d83adde63011.dynamic.utexas.edu:8889/cam0" allowfullscreen></iframe>
             </div>
-            <div id="cam1" class="video-frame" onclick="openPopup('cam1')">
-                <iframe src="http://d83adde63011.dynamic.utexas.edu:8889/cam1/" allowfullscreen></iframe>
+            <!-- Optical Camera 2 -->
+            <div id="optical1" class="video-frame" onclick="openPopupIframe('http://d83adde63011.dynamic.utexas.edu:8889/cam1')">
+                <iframe src="http://d83adde63011.dynamic.utexas.edu:8889/cam1" allowfullscreen></iframe>
             </div>
-            <div id="thermal1" class="video-frame" onclick="openPopup('thermal1')">
+            <!-- Thermal Camera 1 (same scaling as before) -->
+            <div id="thermal1" class="video-frame" onclick="openPopup('ws://d83adde63011.dynamic.utexas.edu:8720')">
                 <img id="thermal-video-1" alt="Thermal Camera 1 Stream">
             </div>
-            <div id="thermal2" class="video-frame" onclick="openPopup('thermal2')">
+            <!-- Thermal Camera 2 (50% increased size) -->
+            <div id="thermal2" class="video-frame" onclick="openPopup('ws://d83adde63011.dynamic.utexas.edu:8620')">
                 <img id="thermal-video-2" alt="Thermal Camera 2 Stream">
             </div>
-        </div>
-
-        <div class="data-container">
-            <div class="data-box">Battery Data</div>
-            <div class="data-box">Localization Data</div>
-            <div class="data-box">Network Data</div>
         </div>
 
         <!-- Pop-up container for expanded video -->
         <div id="popup-container" class="popup-container">
             <button class="close-popup-btn" onclick="closePopup()">Close</button>
-            <iframe id="popup-video" src=""></iframe>
+            <div class="popup-content">
+                <canvas id="popup-canvas"></canvas>  <!-- Canvas for thermal live stream -->
+                <iframe id="popup-iframe" style="display:none;"></iframe> <!-- For optical live stream -->
+            </div>
         </div>
     </div>
 
     <script>
-        // Function to open the pop-up video
-        function openPopup(videoId) {
-            const popupContainer = document.getElementById('popup-container');
-            const popupVideo = document.getElementById('popup-video');
-            const videoSrc = document.getElementById(videoId).querySelector('iframe, img').src;
+        let ws; // WebSocket variable for the pop-up
 
-            // Set the pop-up video source
-            popupVideo.src = videoSrc;
-            
-            // Show the pop-up container
-            popupContainer.style.display = 'flex';
+        // Function to open the pop-up with WebSocket stream for thermal cameras
+        function openPopup(webSocketUrl) {
+            const popupContainer = document.getElementById('popup-container');
+            const canvas = document.getElementById('popup-canvas');
+            const ctx = canvas.getContext('2d');
+            const iframe = document.getElementById('popup-iframe');
+
+            iframe.style.display = 'none'; // Hide iframe
+            canvas.style.display = 'block'; // Show canvas
+
+            // Create a new WebSocket for the live stream
+            ws = new WebSocket(webSocketUrl);
+            ws.binaryType = 'arraybuffer';  // Receive binary data
+
+            ws.onmessage = function (event) {
+                // Convert the received binary data to a Blob and display it in the canvas
+                const blob = new Blob([event.data], { type: 'image/jpeg' });
+                const img = new Image();
+                img.src = URL.createObjectURL(blob);
+                
+                img.onload = function () {
+                    const scaleFactor = (webSocketUrl.includes('8620')) ? 1.5 : 1;  // Scaling for Thermal 2
+                    canvas.width = img.width * scaleFactor;
+                    canvas.height = img.height * scaleFactor;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+            };
+
+            popupContainer.style.display = 'flex';  // Show the pop-up
+        }
+
+        // Function to open the pop-up for optical cameras using iframe
+        function openPopupIframe(iframeSrc) {
+            const popupContainer = document.getElementById('popup-container');
+            const canvas = document.getElementById('popup-canvas');
+            const iframe = document.getElementById('popup-iframe');
+
+            ws && ws.close();  // Close WebSocket if it was previously open
+            canvas.style.display = 'none'; // Hide canvas for iframe videos
+            iframe.style.display = 'block'; // Show iframe for optical stream
+
+            iframe.src = iframeSrc; // Set the iframe source
+            popupContainer.style.display = 'flex';  // Show the pop-up
         }
 
         // Function to close the pop-up video
         function closePopup() {
             const popupContainer = document.getElementById('popup-container');
-            const popupVideo = document.getElementById('popup-video');
+            const iframe = document.getElementById('popup-iframe');
 
-            // Hide the pop-up container and stop the video
-            popupContainer.style.display = 'none';
-            popupVideo.src = '';
+            if (ws) {
+                ws.close();  // Close the WebSocket connection when the pop-up is closed
+            }
+
+            iframe.src = ''; // Clear iframe source to stop playing
+            popupContainer.style.display = 'none';  // Hide the pop-up
         }
 
-        // WebSocket connection for the first thermal camera stream
+        // WebSocket connection for the first thermal camera stream (Main dashboard view)
         const videoElement1 = document.getElementById('thermal-video-1');
-        const ws1 = new WebSocket('ws://d83adde63011.dynamic.utexas.edu:8620');  // WebSocket for Thermal Camera 1
+        const ws1 = new WebSocket('ws://d83adde63011.dynamic.utexas.edu:8720');
 
         ws1.binaryType = 'arraybuffer';  // Set to receive binary data
-
         ws1.onmessage = function (event) {
             const blob = new Blob([event.data], { type: 'image/jpeg' });
             const url = URL.createObjectURL(blob);
             videoElement1.src = url;
         };
 
-        // WebSocket connection for the second thermal camera stream
+        // WebSocket connection for the second thermal camera stream (Main dashboard view)
         const videoElement2 = document.getElementById('thermal-video-2');
-        const ws2 = new WebSocket('ws://d83adde63011.dynamic.utexas.edu:8766');  // WebSocket for Thermal Camera 2
+        const ws2 = new WebSocket('ws://d83adde63011.dynamic.utexas.edu:8620');
 
         ws2.binaryType = 'arraybuffer';  // Set to receive binary data
-
         ws2.onmessage = function (event) {
             const blob = new Blob([event.data], { type: 'image/jpeg' });
             const url = URL.createObjectURL(blob);
@@ -189,3 +232,4 @@
     </script>
 </body>
 </html>
+
