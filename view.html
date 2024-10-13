@@ -29,7 +29,7 @@
         }
 
         h1 {
-            color: #8ab4f8; /* Light blue to match the sleek black theme */
+            color: #8ab4f8;
             font-size: 2.5rem;
             text-align: center;
             margin-bottom: 30px;
@@ -42,7 +42,6 @@
             margin-bottom: 20px;
         }
 
-        /* Dark blue border with sleek black background */
         .video-frame {
             width: 100%;
             height: 320px;
@@ -54,7 +53,7 @@
             background-color: #282828;
             overflow: hidden;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.6);
-            border: 5px solid #004080; /* Dark blue border */
+            border: 5px solid #004080;
         }
 
         .video-frame iframe, .video-frame img {
@@ -64,7 +63,22 @@
             border-radius: 10px;
         }
 
-        /* Pop-up container */
+        #value-display {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #1b1b1b;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            border-top: 1px solid #004080;
+            color: #8ab4f8;
+        }
+
+        .data-point {
+            margin: 5px;
+        }
+
         .popup-container {
             position: fixed;
             top: 50%;
@@ -89,7 +103,6 @@
             border-radius: 12px;
         }
 
-        /* Center the content inside the pop-up */
         .popup-content {
             display: flex;
             justify-content: center;
@@ -98,7 +111,6 @@
             height: 100%;
         }
 
-        /* Close button for pop-up */
         .close-popup-btn {
             position: absolute;
             top: 10px;
@@ -111,7 +123,6 @@
             cursor: pointer;
             font-size: 16px;
         }
-
     </style>
 </head>
 <body>
@@ -119,19 +130,19 @@
         <h1>Camera Streams</h1>
         <div class="video-container">
             <!-- Optical Camera 1 -->
-            <div id="optical0" class="video-frame" onclick="openPopupIframe('http://d83adde63011.dynamic.utexas.edu:8889/cam0')">
-                <iframe src="http://d83adde63011.dynamic.utexas.edu:8889/cam0" allowfullscreen></iframe>
+            <div id="optical0" class="video-frame" onclick="openPopupIframe('http://2ccf67506665.dynamic.utexas.edu:8889/cam0')">
+                <iframe src="http://2ccf67506665.dynamic.utexas.edu:8889/cam0" allowfullscreen></iframe>
             </div>
             <!-- Optical Camera 2 -->
-            <div id="optical1" class="video-frame" onclick="openPopupIframe('http://d83adde63011.dynamic.utexas.edu:8889/cam1')">
-                <iframe src="http://d83adde63011.dynamic.utexas.edu:8889/cam1" allowfullscreen></iframe>
+            <div id="optical1" class="video-frame" onclick="openPopupIframe('http://2ccf67506665.dynamic.utexas.edu:8889/cam1')">
+                <iframe src="http://2ccf67506665.dynamic.utexas.edu:8889/cam1" allowfullscreen></iframe>
             </div>
-            <!-- Thermal Camera 1 (same scaling as before) -->
-            <div id="thermal1" class="video-frame" onclick="openPopup('ws://d83adde63011.dynamic.utexas.edu:8720')">
+            <!-- Thermal Camera 1 -->
+            <div id="thermal1" class="video-frame" onclick="openPopup('ws://2ccf67506665.dynamic.utexas.edu:8720')">
                 <img id="thermal-video-1" alt="Thermal Camera 1 Stream">
             </div>
-            <!-- Thermal Camera 2 (50% increased size) -->
-            <div id="thermal2" class="video-frame" onclick="openPopup('ws://d83adde63011.dynamic.utexas.edu:8620')">
+            <!-- Thermal Camera 2 -->
+            <div id="thermal2" class="video-frame" onclick="openPopup('ws://2ccf67506665.dynamic.utexas.edu:8620')">
                 <img id="thermal-video-2" alt="Thermal Camera 2 Stream">
             </div>
         </div>
@@ -140,10 +151,19 @@
         <div id="popup-container" class="popup-container">
             <button class="close-popup-btn" onclick="closePopup()">Close</button>
             <div class="popup-content">
-                <canvas id="popup-canvas"></canvas>  <!-- Canvas for thermal live stream -->
-                <iframe id="popup-iframe" style="display:none;"></iframe> <!-- For optical live stream -->
+                <canvas id="popup-canvas"></canvas>
+                <iframe id="popup-iframe" style="display:none;"></iframe>
             </div>
         </div>
+
+        <!-- Display WebSocket values at the bottom -->
+        <div id="value-display">
+            <span class="data-point">Value 1 (20-40): <span id="random-value-1">0</span></span> |
+            <span class="data-point">Value 2 (100-200): <span id="random-value-2">0</span></span> |
+            <span class="data-point">Value 3 (500-1000): <span id="random-value-3">0</span></span> |
+            <span class="data-point">Value 4 (5-15): <span id="random-value-4">0</span></span>
+        </div>
+
     </div>
 
     <script>
@@ -170,7 +190,7 @@
                 img.src = URL.createObjectURL(blob);
                 
                 img.onload = function () {
-                    const scaleFactor = (webSocketUrl.includes('8620')) ? 1.5 : 1;  // Scaling for Thermal 2
+                    const scaleFactor = (webSocketUrl.includes('8620')) ? 1.5 : 1;
                     canvas.width = img.width * scaleFactor;
                     canvas.height = img.height * scaleFactor;
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -210,7 +230,7 @@
 
         // WebSocket connection for the first thermal camera stream (Main dashboard view)
         const videoElement1 = document.getElementById('thermal-video-1');
-        const ws1 = new WebSocket('ws://d83adde63011.dynamic.utexas.edu:8720');
+        const ws1 = new WebSocket('ws://2ccf67506665.dynamic.utexas.edu:8720');
 
         ws1.binaryType = 'arraybuffer';  // Set to receive binary data
         ws1.onmessage = function (event) {
@@ -221,7 +241,7 @@
 
         // WebSocket connection for the second thermal camera stream (Main dashboard view)
         const videoElement2 = document.getElementById('thermal-video-2');
-        const ws2 = new WebSocket('ws://d83adde63011.dynamic.utexas.edu:8620');
+        const ws2 = new WebSocket('ws://2ccf67506665.dynamic.utexas.edu:8620');
 
         ws2.binaryType = 'arraybuffer';  // Set to receive binary data
         ws2.onmessage = function (event) {
@@ -229,7 +249,29 @@
             const url = URL.createObjectURL(blob);
             videoElement2.src = url;
         };
+
+        // WebSocket connections for the four random values
+        const socket1 = new WebSocket('ws://2ccf67506665.dynamic.utexas.edu:8765');
+        socket1.onmessage = function(event) {
+            document.getElementById('random-value-1').innerText = event.data;
+        };
+
+        const socket2 = new WebSocket('ws://2ccf67506665.dynamic.utexas.edu:8766');
+        socket2.onmessage = function(event) {
+            document.getElementById('random-value-2').innerText = event.data;
+        };
+
+        const socket3 = new WebSocket('ws://2ccf67506665.dynamic.utexas.edu:8767');
+        socket3.onmessage = function(event) {
+            document.getElementById('random-value-3').innerText = event.data;
+        };
+
+        const socket4 = new WebSocket('ws://2ccf67506665.dynamic.utexas.edu:8768');
+        socket4.onmessage = function(event) {
+            document.getElementById('random-value-4').innerText = event.data;
+        };
     </script>
+
 </body>
 </html>
 
