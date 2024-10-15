@@ -1,98 +1,120 @@
-// src/App.js
-import React, { useState } from 'react';
-import GridLayout from 'react-grid-layout';
+import React from 'react';
 import './App.css';
 import CameraFrame from './components/CameraFrame';
 import DataGraph from './components/DataGraph';
 import WebSocketWidget from './components/WebSocketWidget';
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+
+// Global IP addresses
+const RASPI_IP = "2ccf67506665.dynamic.utexas.edu";
+const STEAMDECK_IP = "e88da6afd212.dynamic.utexas.edu";
 
 function App() {
-  // Global IP variables
-  const raspi_ip = "2ccf67506665.dynamic.utexas.edu";  // IP or domain for Raspberry Pi
-  const steamdeck_ip = "e88da6afd212.dynamic.utexas.edu";  // IP or domain for Steam Deck
+  // State for C20 and H2S gas sensor data
+  const [c20Data, setC20Data] = React.useState(Array(100).fill(0));  // Initialize with 100 elements
+  const [h2sData, setH2sData] = React.useState(Array(100).fill(0));  // Initialize with 100 elements
 
-  const [isReactDashboard, setIsReactDashboard] = useState(true); // Toggle between React and HTML dashboards
+  // Function to simulate C20 gas sensor data
+  const generateC20Data = () => {
+    const newData = [...c20Data];
+    const min = 7;  // Example lower range for C20 ppm
+    const max = 15; // Example upper range for C20 ppm
+    const newValue = (Math.random() * (max - min) + min).toFixed(2);
+    newData.push(parseFloat(newValue));
+    newData.shift();  // Remove the first value to keep array at 100 elements
+    setC20Data(newData);
+  };
 
-  const layout = [
-    { i: 'camera1', x: 0, y: 0, w: 7, h: 3.3 }, // Optical camera (wider)
-    { i: 'camera2', x: 7.2, y: 0, w: 7, h: 3.3 }, // Optical camera (wider)
-    { i: 'camera3', x: 0, y: 2.5, w: 7, h: 3.5 }, // Thermal camera (square)
-    { i: 'camera4', x: 7.2, y: 2.5, w: 7, h: 3.5 }, // Thermal camera (square)
-    { i: 'graph1', x: 18.5, y: 0, w: 7.3, h: 3.5 },  // Graph (wider)
-    { i: 'graph2', x: 11, y: 5.7, w: 7.3, h: 3.5 },  // Another graph
-    { i: 'widget1', x: 14.2, y: 0, w: 6.2, h: 1.2 }, // WebSocket widget (small)
-    { i: 'widget2', x: 14.2, y: 2.3, w: 6.2, h: 1.2 }, // WebSocket widget (small)
-  ];
+  // Function to simulate H2S gas sensor data
+  const generateH2SData = () => {
+    const newData = [...h2sData];
+    const min = 0.00011;  // Lower range for H2S in ppm
+    const max = 0.00033;  // Upper range for H2S in ppm
+    const newValue = (Math.random() * (max - min) + min).toFixed(6);
+    newData.push(parseFloat(newValue));
+    newData.shift();  // Remove the first value to keep array at 100 elements
+    setH2sData(newData);
+  };
 
-  // Function to toggle between dashboards or open the HTML dashboard in a new tab
-  const openHtmlDashboard = () => {
-    window.open('/dashboard.html', '_blank'); // Open the HTML file in a new tab
+  // Generate new data every 2 seconds
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      generateC20Data();
+      generateH2SData();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [c20Data, h2sData]);
+
+  // Function to switch to the dashboard.html
+  const switchToDashboardHTML = () => {
+    window.location.href = '/dashboard.html'; // Redirect to dashboard.html
   };
 
   return (
     <div className="App">
-      <button onClick={openHtmlDashboard}>
-        Open HTML Dashboard
-      </button>
-
-      <GridLayout
-        className="layout"
-        layout={layout}
-        cols={30}
-        rowHeight={100}
-        width={1200}
-        isResizable={true}
-        isDraggable={true}
-      >
-        <div key="camera1">
+      <h1>Dashboard</h1>
+      <div className="grid-container">
+        {/* Camera Feeds */}
+        <div className="grid-item">
           <CameraFrame
             title="Optical Camera 1"
-            url={`http://${raspi_ip}:8889/cam0`} // Using raspi_ip for Optical Camera 1
+            url={`http://${RASPI_IP}:8889/cam0`}
             type="iframe"
             aspectRatio="12:9"
           />
         </div>
-        <div key="camera2">
+        <div className="grid-item">
           <CameraFrame
             title="Optical Camera 2"
-            url={`http://${raspi_ip}:8889/cam1`} // Using raspi_ip for Optical Camera 2
+            url={`http://${RASPI_IP}:8889/cam1`}
             type="iframe"
             aspectRatio="12:9"
           />
         </div>
-        <div key="camera3">
+        <div className="grid-item">
           <CameraFrame
             title="Thermal Camera 1"
-            wsUrl={`ws://${steamdeck_ip}:8720`} // Using steamdeck_ip for Thermal Camera 1
+            wsUrl={`ws://${RASPI_IP}:8720`}
             type="ws"
             aspectRatio="1:1"
           />
         </div>
-        <div key="camera4">
+        <div className="grid-item">
           <CameraFrame
             title="Thermal Camera 2"
-            wsUrl={`ws://${steamdeck_ip}:8620`} // Using steamdeck_ip for Thermal Camera 2
+            wsUrl={`ws://${RASPI_IP}:8620`}
             type="ws"
             aspectRatio="1:1"
           />
         </div>
-        <div key="graph1">
-          <DataGraph title="Battery Status" data={[50, 60, 70, 80]} />
+
+        {/* Gas Sensor Graphs */}
+        <div className="grid-item">
+          <DataGraph title="C20 Gas Sensor" data={c20Data} />
         </div>
-        <div key="graph2">
-          <DataGraph title="Network Status" data={[10, 20, 30, 40]} />
+        <div className="grid-item">
+          <DataGraph title="H2S Gas Sensor" data={h2sData} />
         </div>
-        <div key="widget1">
-          <WebSocketWidget wsUrl={`ws://${raspi_ip}:8765`} title="Voltage Usage (Port 8765)" />
+
+        {/* New WebSocket Widget for Voltage, Current, Power */}
+        <div className="grid-item">
+          <WebSocketWidget wsUrl={`ws://${RASPI_IP}:8805`} title="Voltage, Current, Power" />
         </div>
-        <div key="widget2">
-          <WebSocketWidget wsUrl={`ws://${raspi_ip}:8766`} title="Thermistor Usage (Port 8766)" />
+
+        {/* Other Widgets (if needed) */}
+        <div className="grid-item">
+          <WebSocketWidget wsUrl={`ws://${RASPI_IP}:8806`} title="Thermistor Usage (Port 8806)" />
         </div>
-      </GridLayout>
+      </div>
+
+      {/* Button Panel in Bottom-right Corner */}
+      <div className="button-panel">
+        <button onClick={switchToDashboardHTML}>Switch to Dashboard HTML</button>
+        <button disabled>Enable/Disable</button> {/* Placeholder for future buttons */}
+      </div>
     </div>
   );
 }
 
 export default App;
+
