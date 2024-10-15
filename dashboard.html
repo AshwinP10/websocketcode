@@ -123,6 +123,17 @@
             cursor: pointer;
             font-size: 16px;
         }
+
+        .return-button {
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
@@ -158,11 +169,10 @@
 
         <!-- Display WebSocket values at the bottom -->
         <div id="value-display">
-            <span class="data-point">Value 1 (20-40): <span id="random-value-1">0</span></span> |
-            <span class="data-point">Value 2 (100-200): <span id="random-value-2">0</span></span> |
-            <span class="data-point">Value 3 (500-1000): <span id="random-value-3">0</span></span> |
-            <span class="data-point">Value 4 (5-15): <span id="random-value-4">0</span></span>
         </div>
+
+        <!-- Return Button -->
+        <button class="return-button" onclick="window.location.href='/'">Return to React App</button>
     </div>
 
     <script>
@@ -281,4 +291,3 @@
 
 </body>
 </html>
-
