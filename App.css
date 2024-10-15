@@ -1,0 +1,70 @@
+/* src/App.css */
+
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #121212;
+  color: #ffffff;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+h1 {
+  color: #8ab4f8;
+  margin-bottom: 20px;
+}
+
+/* Grid layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 20px; /* Space between items */
+}
+
+.grid-item {
+  background-color: #1b1b1b;
+  border: 2px solid #004080;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.grid-item h3 {
+  color: #8ab4f8;
+  margin-bottom: 10px;
+}
+
+.grid-item canvas {
+  width: 100%;
+  height: auto;
+}
+
+.button-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #282828;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.button-panel button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  margin: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-panel button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
